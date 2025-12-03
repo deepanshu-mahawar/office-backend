@@ -1,29 +1,33 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IProject extends Document {
-  mentorId: mongoose.Types.ObjectId;
   title: string;
+  project_type: string;
   description: string;
-  techStack: string[];
-  githubLink?: string;
-  liveLink?: string;
-  certificateUrl?: string;
+  company?: string;
+  startDate: string;
+  endDate: string;
+  technologies: string[];
+  mentorId?: mongoose.Types.ObjectId;
+  studentId: mongoose.Types.ObjectId;
+  projectUrl?: string;
+  certificate?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 const ProjectSchema = new Schema<IProject>(
   {
-    mentorId: {
-      type: Schema.Types.ObjectId,
-      ref: "Mentor",
-      required: true,
-    },
-
     title: {
       type: String,
       required: true,
       trim: true,
+    },
+
+    project_type: {
+      type: String,
+      required: true,
+      enum: ["project", "internship", "training"],
     },
 
     description: {
@@ -31,23 +35,48 @@ const ProjectSchema = new Schema<IProject>(
       required: true,
     },
 
-    techStack: [
+    company: {
+      type: String,
+      default: "",
+    },
+
+    startDate: {
+      type: String,
+      required: true,
+    },
+
+    endDate: {
+      type: String,
+      required: true,
+    },
+
+    technologies: [
       {
         type: String,
         required: true,
       },
     ],
 
-    githubLink: {
-      type: String,
+    mentorId: {
+      type: Schema.Types.ObjectId,
+      ref: "Mentor",
+      default: null,
     },
 
-    liveLink: {
-      type: String,
+    studentId: {
+      type: Schema.Types.ObjectId,
+      ref: "Student",
+      required: true,
     },
 
-    certificateUrl: {
+    projectUrl: {
       type: String,
+      default: "",
+    },
+
+    certificate: {
+      type: String,
+      default: "",
     },
   },
   { timestamps: true }
