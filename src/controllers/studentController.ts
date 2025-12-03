@@ -75,6 +75,7 @@ export const loginStudent = async (req: Request, res: Response) => {
         year: student.year,
         phone: student.phone,
         github_link: student.github_link,
+        role: student.role,
       },
     });
   } catch (error) {
