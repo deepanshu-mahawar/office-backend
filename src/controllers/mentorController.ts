@@ -76,3 +76,19 @@ export const loginMentor = async (req: Request, res: Response) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getAllMentors = async (req: Request, res: Response) => {
+  try {
+    const mentors = await Mentor.find().select("name expertise _id");
+
+    const formatted = mentors.map((m) => ({
+      id: m._id,
+      name: m.name,
+      expertise: m.expertise,
+    }));
+
+    res.status(200).json(formatted);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching mentors", error });
+  }
+};
