@@ -9,6 +9,6 @@ const router = express.Router();
 
 router.post("/create", upload.single("certificate"), uploadProject);
 router.get("/student/:studentId", getProjectsByStudentId);
-// router.get("/mentor/:mentorId", getProjectsByMentor);
+
 
 export default router;

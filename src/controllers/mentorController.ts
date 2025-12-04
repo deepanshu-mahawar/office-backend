@@ -92,3 +92,40 @@ export const getAllMentors = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error fetching mentors", error });
   }
 };
+
+export const getMentorById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Mentor ID is required",
+      });
+    }
+
+    const mentor = await Mentor.findById(id).select(
+      "name email phone department specialization expertise experience company _id"
+    );
+
+    if (!mentor) {
+      return res.status(404).json({
+        success: false,
+        message: "Mentor not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      mentor,
+    });
+  } catch (error: any) {
+    console.error("Error fetching mentor:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching mentor",
+      error: error.message,
+    });
+  }
+};
