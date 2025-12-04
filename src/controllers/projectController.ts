@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Project } from "../models/projectModel";
 
+
 export const uploadProject = async (req: Request, res: Response) => {
   try {
     const {
@@ -16,22 +17,30 @@ export const uploadProject = async (req: Request, res: Response) => {
       studentId,
     } = req.body;
 
-    const certificate = req.file ? req.file.filename : "";
+    const certificate_path = req.file ? req.file.filename : null;
 
     const newProject = await Project.create({
       title,
-      project_type,
       description,
-      company,
-      startDate,
-      endDate,
+      project_type,
+
+      company_name: company || null,
+
       technologies: technologies
         ? technologies.split(",").map((t: string) => t.trim())
         : [],
-      mentorId: mentorId || null,
-      studentId,
-      projectUrl,
-      certificate,
+
+      start_date: startDate ? new Date(startDate) : null,
+      end_date: endDate ? new Date(endDate) : null,
+
+      github_link: projectUrl || null,
+
+      certificate_path,
+
+      student_id: studentId,
+      mentor_id: mentorId,
+
+      status: "Submitted",
     });
 
     return res.status(201).json({
@@ -40,7 +49,7 @@ export const uploadProject = async (req: Request, res: Response) => {
       project: newProject,
     });
   } catch (error) {
-    console.error("Error uploading project:", error);
+    console.error("UPLOAD ERROR:", error);
     return res.status(500).json({
       success: false,
       message: "Error uploading project",
@@ -49,54 +58,86 @@ export const uploadProject = async (req: Request, res: Response) => {
   }
 };
 
-export const getProjectsByStudent = async (req: Request, res: Response) => {
+
+// export const getProjectsByStudent = async (req: Request, res: Response) => {
+//   try {
+//     const { studentId } = req.params;
+
+//     if (!studentId) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Student ID is required",
+//       });
+//     }
+
+//     const projects = await Project.find({ studentId }).populate("mentorId");
+
+//     return res.status(200).json({
+//       success: true,
+//       projects,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching student projects:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Failed to fetch projects",
+//     });
+//   }
+// };
+
+
+export const getProjectsByStudentId = async (req: Request, res: Response) => {
   try {
     const { studentId } = req.params;
 
     if (!studentId) {
       return res.status(400).json({
-        success: false,
-        message: "Student ID is required",
+        message: "studentId is required",
       });
     }
 
-    const projects = await Project.find({ studentId }).populate("mentorId");
+    const projects = await Project.find({ student_id: studentId })
+      .populate("student_id", "name email")
+      .populate("mentor_id", "name email")
+      .populate("reviews")
+      .populate("feedbacks");
 
     return res.status(200).json({
       success: true,
-      projects,
+      data: projects,
     });
-  } catch (error) {
-    console.error("Error fetching student projects:", error);
+  } catch (error: any) {
+    console.error("Error getting projects:", error);
     return res.status(500).json({
-      success: false,
-      message: "Failed to fetch projects",
+      message: "Error fetching projects",
+      error: error.message,
     });
   }
 };
 
-export const getProjectsByMentor = async (req: Request, res: Response) => {
-  try {
-    const { mentorId } = req.params;
 
-    if (!mentorId) {
-      return res.status(400).json({
-        success: false,
-        message: "Mentor ID is required",
-      });
-    }
+// export const getProjectsByMentor = async (req: Request, res: Response) => {
+//   try {
+//     const { mentorId } = req.params;
 
-    const projects = await Project.find({ mentorId }).populate("studentId");
+//     if (!mentorId) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Mentor ID is required",
+//       });
+//     }
 
-    return res.status(200).json({
-      success: true,
-      projects,
-    });
-  } catch (error) {
-    console.error("Error fetching mentor projects:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to fetch projects",
-    });
-  }
-};
+//     const projects = await Project.find({ mentorId }).populate("studentId");
+
+//     return res.status(200).json({
+//       success: true,
+//       projects,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching mentor projects:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Failed to fetch projects",
+//     });
+//   }
+// };

@@ -2,53 +2,40 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface IProject extends Document {
   title: string;
-  project_type: string;
   description: string;
-  company?: string;
-  startDate: string;
-  endDate: string;
+  github_link?: string;
+  upload_date: Date;
+  status: string;
+  project_type: string;
+  company_name?: string;
   technologies: string[];
-  mentorId?: mongoose.Types.ObjectId;
-  studentId: mongoose.Types.ObjectId;
-  projectUrl?: string;
-  certificate?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  start_date?: Date;
+  end_date?: Date;
+  certificate_path?: string;
+  student_id: mongoose.Types.ObjectId;
+  mentor_id: mongoose.Types.ObjectId;
 }
 
 const ProjectSchema = new Schema<IProject>(
   {
-    title: {
-      type: String,
-      required: true,
-      trim: true,
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+
+    github_link: { type: String },
+
+    upload_date: {
+      type: Date,
+      default: Date.now,
     },
 
-    project_type: {
+    status: {
       type: String,
-      required: true,
-      enum: ["project", "internship", "training"],
+      default: "Submitted",
     },
 
-    description: {
-      type: String,
-      required: true,
-    },
+    project_type: { type: String, required: true },
 
-    company: {
-      type: String,
-      default: "",
-    },
-
-    startDate: {
-      type: String,
-      required: true,
-    },
-
-    endDate: {
-      type: String,
-      required: true,
-    },
+    company_name: { type: String },
 
     technologies: [
       {
@@ -57,26 +44,21 @@ const ProjectSchema = new Schema<IProject>(
       },
     ],
 
-    mentorId: {
-      type: Schema.Types.ObjectId,
-      ref: "Mentor",
-      default: null,
-    },
+    start_date: { type: Date },
+    end_date: { type: Date },
 
-    studentId: {
+    certificate_path: { type: String },
+
+    student_id: {
       type: Schema.Types.ObjectId,
       ref: "Student",
       required: true,
     },
 
-    projectUrl: {
-      type: String,
-      default: "",
-    },
-
-    certificate: {
-      type: String,
-      default: "",
+    mentor_id: {
+      type: Schema.Types.ObjectId,
+      ref: "Mentor",
+      required: true,
     },
   },
   { timestamps: true }
