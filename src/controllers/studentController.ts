@@ -86,3 +86,40 @@ export const loginStudent = async (req: Request, res: Response) => {
     });
   }
 };
+
+
+export const getStudentById = async (req: Request, res: Response) => {
+  try {
+    const { studentId } = req.params;
+
+    if (!studentId) {
+      return res.status(400).json({
+        success: false,
+        message: "studentId is required",
+      });
+    }
+
+    const student = await Student.findById(studentId).select("-password");
+    // Remove password from response
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: "Student not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: student,
+    });
+  } catch (error: any) {
+    console.error("Error getting student:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching student",
+      error: error.message,
+    });
+  }
+};

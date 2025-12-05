@@ -10,6 +10,7 @@ export interface IMentor extends Document {
   experience: string;
   company: string;
   expertise: string;
+  role: string;
 }
 
 const MentorSchema: Schema = new Schema(
@@ -23,6 +24,11 @@ const MentorSchema: Schema = new Schema(
     experience: { type: String, required: true },
     company: { type: String, required: true },
     expertise: { type: String, required: true },
+        role: {
+      type: String,
+      enum: ["mentor"],
+      default: "mentor",
+    },
   },
   { timestamps: true }
 );

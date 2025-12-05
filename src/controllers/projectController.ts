@@ -86,3 +86,33 @@ export const getProjectsByStudentId = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getProjectsByMentorId = async (req: Request, res: Response) => {
+  try {
+    const { mentorId } = req.params;
+
+    if (!mentorId) {
+      console.log("mentorId missing in request params");
+
+      return res.status(400).json({
+        message: "mentorId is required",
+      });
+    }
+
+    const query = { mentor_id: mentorId };
+
+    const projects = await Project.find(query);
+
+    return res.status(200).json({
+      success: true,
+      data: projects,
+    });
+  } catch (error: any) {
+    console.error("Error getting mentor projects:", error);
+
+    return res.status(500).json({
+      message: "Error fetching mentor projects",
+      error: error.message,
+    });
+  }
+};

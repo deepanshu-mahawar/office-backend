@@ -14,6 +14,8 @@ export interface IProject extends Document {
   certificate_path?: string;
   student_id: mongoose.Types.ObjectId;
   mentor_id: mongoose.Types.ObjectId;
+  feedback?: string;
+  grade?: string;
 }
 
 const ProjectSchema = new Schema<IProject>(
@@ -26,11 +28,6 @@ const ProjectSchema = new Schema<IProject>(
     upload_date: {
       type: Date,
       default: Date.now,
-    },
-
-    status: {
-      type: String,
-      default: "Submitted",
     },
 
     project_type: { type: String, required: true },
@@ -55,6 +52,13 @@ const ProjectSchema = new Schema<IProject>(
       required: true,
     },
 
+    feedback: { type: String },
+    grade: { type: String },
+    status: {
+      type: String,
+      enum: ["Submitted", "approved", "needs_improvement"],
+      default: "Submitted",
+    },
     mentor_id: {
       type: Schema.Types.ObjectId,
       ref: "Mentor",
