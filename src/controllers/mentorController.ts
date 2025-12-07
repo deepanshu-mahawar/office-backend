@@ -129,3 +129,51 @@ export const getMentorById = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const updateMentor = async (req: Request, res: Response) => {
+  try {
+    const { mentorId } = req.params;
+
+    if (!mentorId) {
+      return res.status(400).json({
+        success: false,
+        message: "Mentor ID is required",
+      });
+    }
+
+    const updates = { ...req.body };
+
+    // If password is being updated -> hash it
+    if (updates.password) {
+      updates.password = await bcrypt.hash(updates.password, 10);
+    }
+
+    const updatedMentor = await Mentor.findByIdAndUpdate(mentorId, updates, {
+      new: true,
+      runValidators: true,
+    }).select(
+      "name email phone department specialization expertise experience company _id"
+    );
+
+    if (!updatedMentor) {
+      return res.status(404).json({
+        success: false,
+        message: "Mentor not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Mentor updated successfully",
+      mentor: updatedMentor,
+    });
+  } catch (error: any) {
+    console.error("Error updating mentor:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Error updating mentor",
+      error: error.message,
+    });
+  }
+};
