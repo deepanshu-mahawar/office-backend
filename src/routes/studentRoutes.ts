@@ -3,6 +3,7 @@ import {
   getStudentById,
   loginStudent,
   registerStudent,
+  updateStudent,
 } from "../controllers/studentController";
 import Student from "../models/studentModel";
 
@@ -18,5 +19,6 @@ router.post("/many", async (req, res) => {
   );
   res.json({ success: true, data: students });
 });
+router.put("/:studentId", updateStudent);
 
 export default router;

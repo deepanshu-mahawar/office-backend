@@ -87,7 +87,6 @@ export const loginStudent = async (req: Request, res: Response) => {
   }
 };
 
-
 export const getStudentById = async (req: Request, res: Response) => {
   try {
     const { studentId } = req.params;
@@ -119,6 +118,56 @@ export const getStudentById = async (req: Request, res: Response) => {
     return res.status(500).json({
       success: false,
       message: "Error fetching student",
+      error: error.message,
+    });
+  }
+};
+
+export const updateStudent = async (req: Request, res: Response) => {
+  try {
+    const { studentId } = req.params;
+
+    if (!studentId) {
+      return res.status(400).json({
+        success: false,
+        message: "studentId is required",
+      });
+    }
+
+    const { name, email, department, year, phone } = req.body;
+
+    // Build safe update object
+    const updates: any = {
+      ...(name && { name }),
+      ...(email && { email }),
+      ...(department && { department }),
+      ...(year && { year }),
+      ...(phone && { phone }),
+    };
+
+    const updatedStudent = await Student.findByIdAndUpdate(
+      studentId,
+      { $set: updates },
+      { new: true, runValidators: true }
+    ).select("-password");
+
+    if (!updatedStudent) {
+      return res.status(404).json({
+        success: false,
+        message: "Student not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: updatedStudent,
+    });
+  } catch (error: any) {
+    console.error("Update Student Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error updating student profile",
       error: error.message,
     });
   }
