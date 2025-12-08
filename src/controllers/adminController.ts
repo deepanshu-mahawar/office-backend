@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import Admin from "../models/adminModel";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import Student from "../models/studentModel";
+import Mentor from "../models/mentorModel";
+import { Project } from "../models/projectModel";
 
 // REGISTER ADMIN
 export const registerAdmin = async (req: Request, res: Response) => {
@@ -69,5 +72,95 @@ export const loginAdmin = async (req: Request, res: Response) => {
     });
   } catch (error) {
     return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const getAllStudents = async (req: Request, res: Response) => {
+  try {
+    const students = await Student.find().select("-password");
+    return res.status(200).json({ success: true, students });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const deleteStudent = async (req: Request, res: Response) => {
+  try {
+    const { studentId } = req.params;
+    const deleted = await Student.findByIdAndDelete(studentId);
+
+    if (!deleted) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Student not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Student deleted successfully",
+    });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getAllMentorsAdmin = async (req: Request, res: Response) => {
+  try {
+    const mentors = await Mentor.find().select("-password");
+    return res.status(200).json({ success: true, mentors });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const deleteMentor = async (req: Request, res: Response) => {
+  try {
+    const { mentorId } = req.params;
+    const deleted = await Mentor.findByIdAndDelete(mentorId);
+
+    if (!deleted) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Mentor not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Mentor deleted successfully",
+    });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getAllProjects = async (req: Request, res: Response) => {
+  try {
+    const projects = await Project.find()
+      // .populate("student", "name email")
+      // .populate("mentor", "name email");
+
+    return res.status(200).json({ success: true, projects });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const deleteProject = async (req: Request, res: Response) => {
+  try {
+    const { projectId } = req.params;
+    const deleted = await Project.findByIdAndDelete(projectId);
+
+    if (!deleted) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Project not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Project deleted successfully",
+    });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
