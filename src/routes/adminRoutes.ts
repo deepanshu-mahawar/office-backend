@@ -1,5 +1,5 @@
 import express from "express";
-import { registerAdmin, loginAdmin, getAllStudents, deleteStudent, getAllMentorsAdmin, deleteMentor, deleteProject, getAllProjects } from "../controllers/adminController";
+import { registerAdmin, loginAdmin, getAllStudents, deleteStudent, getAllMentorsAdmin, deleteMentor, deleteProject, getAllProjects, getAdminById } from "../controllers/adminController";
 
 const router = express.Router();
 
@@ -16,5 +16,8 @@ router.delete("/mentors/:mentorId", deleteMentor);
 
 router.get("/projects", getAllProjects);
 router.delete("/projects/:projectId", deleteProject);
+
+router.get("/:adminId", getAdminById);
+
 
 export default router;

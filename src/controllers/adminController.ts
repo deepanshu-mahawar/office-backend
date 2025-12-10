@@ -164,3 +164,28 @@ export const deleteProject = async (req: Request, res: Response) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const getAdminById = async (req: Request, res: Response) => {
+  try {
+    const { adminId } = req.params;
+
+    const admin = await Admin.findById(adminId).select("-password");
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        message: "Admin not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      admin,
+    });
+
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Server error",
+    });
+  }
+};
