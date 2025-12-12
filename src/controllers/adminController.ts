@@ -135,9 +135,9 @@ export const deleteMentor = async (req: Request, res: Response) => {
 
 export const getAllProjects = async (req: Request, res: Response) => {
   try {
-    const projects = await Project.find()
-      // .populate("student", "name email")
-      // .populate("mentor", "name email");
+    const projects = await Project.find();
+    // .populate("student", "name email")
+    // .populate("mentor", "name email");
 
     return res.status(200).json({ success: true, projects });
   } catch (error: any) {
@@ -181,7 +181,55 @@ export const getAdminById = async (req: Request, res: Response) => {
       success: true,
       admin,
     });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Server error",
+    });
+  }
+};
 
+const modelMap: any = {
+  admin: Admin,
+  mentor: Mentor,
+  student: Student,
+};
+
+export const updateUserProfile = async (req: Request, res: Response) => {
+  try {
+    const { role, userId } = req.params;
+    const updateData = req.body;
+
+
+    if (!["admin", "student", "mentor"].includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user role",
+      });
+    }
+
+    const Model = modelMap[role];
+
+    if (updateData.password) {
+      updateData.password = await bcrypt.hash(updateData.password, 10);
+    }
+
+    const updatedUser = await Model.findByIdAndUpdate(userId, updateData, {
+      new: true,
+    }).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: `${role} not found`,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
   } catch (error: any) {
     return res.status(500).json({
       success: false,
